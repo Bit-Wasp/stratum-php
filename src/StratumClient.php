@@ -34,12 +34,22 @@ class StratumClient
     }
 
     /**
+     * @param $method
+     * @param array $params
+     * @return \React\Promise\Promise
+     */
+    public function request($method, array $params = [])
+    {
+        return $this->connector->send($this->reqFactory->create($method, $params));
+    }
+
+    /**
      * @param string $txid
      * @return \React\Promise\Promise
      */
     public function getTransaction($txid)
     {
-        return $this->connector->send($this->reqFactory->create('blockchain.transaction.get', [$txid]));
+        return $this->request('blockchain.transaction.get', [$txid]);
     }
 
     /**
@@ -49,7 +59,7 @@ class StratumClient
      */
     public function sendVersion($clientVersion, $protocolVersion)
     {
-        return $this->connector->send($this->reqFactory->create('server.version', [$clientVersion, $protocolVersion]));
+        return $this->request('server.version', [$clientVersion, $protocolVersion]);
     }
 
     /**
@@ -57,7 +67,7 @@ class StratumClient
      */
     public function getBanner()
     {
-        return $this->connector->send($this->reqFactory->create('server.banner'));
+        return $this->request('server.banner');
     }
 
     /**
@@ -66,7 +76,7 @@ class StratumClient
      */
     public function getAddressHistory($address)
     {
-        return $this->connector->send($this->reqFactory->create('blockchain.address.get_history', [$address]));
+        return $this->request('blockchain.address.get_history', [$address]);
     }
 
     public function getMemPool()
@@ -80,7 +90,7 @@ class StratumClient
      */
     public function getAddressBalance($address)
     {
-        return $this->connector->send($this->reqFactory->create('blockchain.address.get_balance', [$address]));
+        return $this->request('blockchain.address.get_balance', [$address]);
     }
 
     /**
@@ -89,7 +99,7 @@ class StratumClient
      */
     public function getAddressUnspent($address)
     {
-        return $this->connector->send($this->reqFactory->create('blockchain.address.get_balance', [$address]));
+        return $this->request('blockchain.address.get_balance', [$address]);
     }
 
     /**
@@ -99,6 +109,6 @@ class StratumClient
      */
     public function getTransactionMerkle($txid, $txHeight)
     {
-        return $this->connector->send($this->reqFactory->create('blockchain.transaction.get_merkle', [$txid, $txHeight]));
+        return $this->request('blockchain.transaction.get_merkle', [$txid, $txHeight]);
     }
 }
