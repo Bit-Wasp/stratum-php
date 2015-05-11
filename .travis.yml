@@ -10,6 +10,9 @@ php:
 before_install:
   - composer selfupdate
 
+install:
+  - composer update
+
 script:
   - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
   - php vendor/bin/phpcs -n --standard=PSR1,PSR2 --report=full src/
