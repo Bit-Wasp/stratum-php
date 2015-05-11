@@ -1,8 +1,7 @@
 {
   "require": {
-    "fguillot/json-rpc": "@stable",
-    "react/socket-client": "0.4.*",
-    "react/http-client": "0.4.*"
+    "fguillot/json-rpc": "0.0.1",
+    "react/socket-client": "0.4.*"
   },
   "require-dev": {
     "bitwasp/testing-php": "0.0.3"
