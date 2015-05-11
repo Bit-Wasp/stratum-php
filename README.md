@@ -1,4 +1,8 @@
 ## stratum-php
+[![Build Status](https://travis-ci.org/Bit-Wasp/stratum-php.svg?branch=master)](http://travis-ci.org/Bit-Wasp/stratum-php)
+[![Code Coverage](https://scrutinizer-ci.com/g/bit-wasp/stratum-php/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/bit-wasp/stratum-php/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Bit-Wasp/stratum-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Bit-Wasp/stratum-php/?branch=master)
+ 
 Implementation of the Stratum protocol (for electrum and mining) using ReactPHP
 
 Currently this library supports a TCP transport to stratum servers. 
