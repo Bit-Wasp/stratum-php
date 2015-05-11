@@ -10,5 +10,10 @@
     "psr-4": {
       "BitWasp\\Bitcoin\\Stratum\\": "src/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "BitWasp\\Bitcoin\\Stratum\\Tests\\": "tests/"
+    }
   }
 }
