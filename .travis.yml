@@ -1,0 +1,20 @@
+language: php
+
+php:
+  - 5.4
+  - 5.5
+  - 5.6
+  - hhvm
+  - nightly
+
+before_install:
+  - composer selfupdate
+
+script:
+  - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+  - php vendor/bin/phpcs -n --standard=PSR1,PSR2 --report=full src/
+
+after_success:
+   - wget https://scrutinizer-ci.com/ocular.phar
+   - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml; fi;'
+
