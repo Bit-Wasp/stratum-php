@@ -2,6 +2,7 @@
 
 require_once "vendor/autoload.php";
 
+
 use \BitWasp\Bitcoin\Stratum\StratumClient;
 use \BitWasp\Bitcoin\Stratum\Request\RequestFactory;
 
@@ -21,12 +22,9 @@ $tcp = new \BitWasp\Bitcoin\Stratum\Connector\Tcp($connector, $host, $port);
 $stratum = new StratumClient($tcp, $requestFactory);
 
 // Make the query, receive a Promise
-$t = $stratum->getTransaction('2439243c47803a613728beab5ccfd7a426c9bfdd069d463b28f6f49915801988');
-$t->then(function ($response) {
-    echo $response;
-},
-function () { /* error callback */ }
-);
-
+$t = $stratum->request('blockchain.transaction.get', ['2439243c47803a613728beab5ccfd7a426c9bfdd069d463b28f6f49915801988']);
+$t->then(function (\BitWasp\Bitcoin\Stratum\Request\Response $response) {
+    var_dump($response);
+});
 
 $loop->run();
