@@ -9,7 +9,18 @@ Currently this library supports a TCP transport to stratum servers.
 Examples of these and other servers can be found on the Electrum server list.
 
 Stratum enables rather stateless wallets to be built with minimal effort, and depending on the use-case could replace running a full node.
- 
+
+https://docs.google.com/document/d/17zHy1SUlhgtCMbypO8cHgpWH73V5iUQKk_0rWvMqSNs/edit?hl=en_US
+https://electrum.orain.org/wiki/Stratum_protocol_specification
+
+### Electrum commands
+server.banner
+server.version [$clientVersion, $protocolVersion]
+blockchain.address.get_history [$address]
+blockchain.address.get_balance [$address]
+blockchain.transaction.get_merkle [$txid, $txHeight]
+blockchain.transaction.get [$txid]
+
 ### Example
 ```php
 
@@ -32,7 +43,7 @@ $tcp = new \BitWasp\Bitcoin\Stratum\Connector\Tcp($connector, $host, $port);
 $stratum = new StratumClient($tcp, $requestFactory);
 
 // Make the query, receive a Promise
-$t = $stratum->getTransaction('2439243c47803a613728beab5ccfd7a426c9bfdd069d463b28f6f49915801988');
+$t = $stratum->request('blockchain.transaction.get', ['2439243c47803a613728beab5ccfd7a426c9bfdd069d463b28f6f49915801988']);
 $t->then(function ($response) {
     echo $response;
 });
