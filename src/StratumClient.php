@@ -35,7 +35,8 @@ class StratumClient
      */
     public function request($method, array $params = [])
     {
-        return $this->connector->send($this->reqFactory->create($method, $params))
+        return $this->connector
+            ->send($this->reqFactory->create($method, $params))
             ->then(function ($request) {
                 return $this->reqFactory->response($request);
             });
