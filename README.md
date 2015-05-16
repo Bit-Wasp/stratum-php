@@ -13,11 +13,14 @@ Stratum enables rather stateless wallets to be built with minimal effort, and de
 https://docs.google.com/document/d/17zHy1SUlhgtCMbypO8cHgpWH73V5iUQKk_0rWvMqSNs/edit?hl=en_US
 https://electrum.orain.org/wiki/Stratum_protocol_specification
 
-### Electrum commands
+### Requests
+Typical requests:
   - server.banner
   - server.version [$clientVersion, $protocolVersion] -  Client sends its own version and version of the protocol it supports. Server responds with its supported version of the protocol 
   - server.donation_address - Return a servers donation address; can be empty. 
   - server.peers.subscribe - (not a subscription) Returns a list of stratum servers connected on IRC
+
+For electrum servers
   - blockchain.numblocks.subscribe - Return the current height of the chain
   - blockchain.transaction.broadcast [$transactionHex] - broadcast the transaction, return the transaction id
   - blockchain.transaction.get_merkle [$txid, $txHeight]
@@ -30,6 +33,8 @@ https://electrum.orain.org/wiki/Stratum_protocol_specification
   - blockchain.utxo.get_address [$txid, $nOutput] - return the address for this transaction output
   - blockchain.block.get_header [$blockHeight] - return the header for the given block height
   - blockchain.block.get_chunk [$blockHeight] - return the block hex for the given block
+
+For mining
   - mining.subscribe - client subscribes for work
   - mining.authorize [$username, $password] - authorize a worker
   - mining.submit [$username, $jobId, $extraNonce2, $nTime, $nonce]
