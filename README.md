@@ -15,11 +15,24 @@ https://electrum.orain.org/wiki/Stratum_protocol_specification
 
 ### Electrum commands
 server.banner
-server.version [$clientVersion, $protocolVersion]
-blockchain.address.get_history [$address]
-blockchain.address.get_balance [$address]
+server.version [$clientVersion, $protocolVersion] -  Client sends its own version and version of the protocol it supports. Server responds with its supported version of the protocol 
+server.donation_address - Return a servers donation address; can be empty. 
+server.peers.subscribe - (not a subscription) Returns a list of stratum servers connected on IRC
+blockchain.numblocks.subscribe - Return the current height of the chain
+blockchain.transaction.broadcast [$transactionHex] - broadcast the transaction, return the transaction id
 blockchain.transaction.get_merkle [$txid, $txHeight]
 blockchain.transaction.get [$txid]
+blockchain.address.subscribe [$address]
+blockchain.address.get_history [$address]
+blockchain.address.get_balance [$address] - return an array of confirmed 
+blockchain.address.get_proof [$address]
+blockchain.address.listunspent [$address] - return an array of [{'txhash':..,'tx_pos':..,'value':..,'height':...},...]
+blockchain.utxo.get_address [$txid, $nOutput] - return the address for this transaction output
+blockchain.block.get_header [$blockHeight] - return the header for the given block height
+blockchain.block.get_chunk [$blockHeight] - return the block hex for the given block
+mining.subscribe - client subscribes for work
+mining.authorize [$username, $password] - authorize a worker
+mining.submit [$username, $jobId, $extraNonce2, $nTime, $nonce]
 
 ### Example
 ```php
