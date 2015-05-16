@@ -10,9 +10,6 @@ Examples of these and other servers can be found on the Electrum server list.
 
 Stratum enables rather stateless wallets to be built with minimal effort, and depending on the use-case could replace running a full node.
 
-https://docs.google.com/document/d/17zHy1SUlhgtCMbypO8cHgpWH73V5iUQKk_0rWvMqSNs/edit?hl=en_US
-https://electrum.orain.org/wiki/Stratum_protocol_specification
-
 ### Requests
 Typical requests:
   - server.banner
@@ -72,6 +69,9 @@ $t->then(function (Response $response) {
 });
 
 $loop->run();
-
-
 ```
+
+### Further Information
+
+  - https://docs.google.com/document/d/17zHy1SUlhgtCMbypO8cHgpWH73V5iUQKk_0rWvMqSNs/edit?hl=en_US
+  - https://electrum.orain.org/wiki/Stratum_protocol_specification
