@@ -2,7 +2,6 @@
 
 namespace BitWasp\Stratum;
 
-
 use BitWasp\Stratum\Request\RequestFactory;
 use React\EventLoop\LoopInterface;
 use React\SocketClient\Connector;

@@ -2,7 +2,6 @@
 
 namespace BitWasp\Stratum\Exceptions;
 
-
 class ApiError extends \Exception
 {
     /**

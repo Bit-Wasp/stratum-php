@@ -9,7 +9,8 @@ use React\Promise\Deferred;
 use React\SocketClient\ConnectorInterface;
 use React\Stream\Stream;
 
-class Executor {
+class Executor
+{
 
     /**
      * @var LoopInterface
