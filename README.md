@@ -41,31 +41,37 @@ For mining
 
 ### Example
 ```php
+use BitWasp\Stratum\Request\RequestFactory;
+use BitWasp\Stratum\Request\Response;
+use BitWasp\Stratum\Factory;
 
-use \BitWasp\Bitcoin\Stratum\StratumClient;
-use \BitWasp\Bitcoin\Stratum\Request\RequestFactory;
-
-$requestFactory = new RequestFactory;
-
-$host = 'electrum3.hachre.de';
+$host = 'bitcoin.trouth.net';
 $port = 50001;
 
 // Initialize react event loop, resolver, and connector
 $loop = React\EventLoop\Factory::create();
-$dnsResolverFactory = new React\Dns\Resolver\Factory();
-$dns = $dnsResolverFactory->create('8.8.8.8', $loop);
-$connector = new \React\SocketClient\Connector($loop, $dns);
+$connector = new \React\SocketClient\Connector(
+    $loop,
+    (new React\Dns\Resolver\Factory())->create('8.8.8.8', $loop)
+);
 
-// Initialize TCP transport for stratum client
-$tcp = new \BitWasp\Bitcoin\Stratum\Connector\Tcp($connector, $host, $port);
-$stratum = new StratumClient($tcp, $requestFactory);
+$requestFactory = new RequestFactory;
+$clientFactory = new Factory($loop, $connector, $requestFactory);
+$stratum = $clientFactory->create($host, $port);
+
+$v = $stratum->request('server.version', ['1.9.7', ' 0.6'])->then(function (Response $r) {
+    echo "Server version: " . $r->getResult() . "\n";
+});
 
 // Make the query, receive a Promise
-$t = $stratum->request('blockchain.transaction.get', ['2439243c47803a613728beab5ccfd7a426c9bfdd069d463b28f6f49915801988']);
-$t->then(function ($response) {
-    echo $response;
+$t = $stratum->request('blockchain.address.get_balance', ['1NfcqVqW4f6tACwaqjyKXRV75aqt3VEVPE']);
+$t->then(function (Response $response) {
+    var_dump($response);
+}, function (\BitWasp\Stratum\Exceptions\ApiError $error) {
+    echo sprintf(" [id: %s] error: %s", $error->getId(), $error->getMessage());
 });
 
 $loop->run();
+
 
 ```
