@@ -18,6 +18,16 @@ class Executor
     private $loop;
 
     /**
+     * @var ConnectorInterface
+     */
+    private $connector;
+
+    /**
+     * @var RequestFactory
+     */
+    private $requestFactory;
+
+    /**
      * @var string
      */
     private $host;
@@ -27,10 +37,6 @@ class Executor
      */
     private $port;
 
-    /**
-     * @var RequestFactory
-     */
-    private $requestFactory;
     /**
      * @var int
      */
