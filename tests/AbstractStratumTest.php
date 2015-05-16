@@ -1,6 +1,6 @@
 <?php
 
-namespace BitWasp\Bitcoin\Stratum\Tests;
+namespace BitWasp\Stratum\Tests;
 
 abstract class AbstractStratumTest extends \PHPUnit_Framework_TestCase
 {

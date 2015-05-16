@@ -1,10 +1,10 @@
 <?php
 
-namespace BitWasp\Bitcoin\Stratum\Tests\Request;
+namespace BitWasp\Stratum\Tests\Request;
 
-use \BitWasp\Bitcoin\Stratum\Request\Request;
-use \BitWasp\Bitcoin\Stratum\Request\RequestFactory;
-use \BitWasp\Bitcoin\Stratum\Tests\AbstractStratumTest;
+use BitWasp\Stratum\Request\Request;
+use BitWasp\Stratum\Request\RequestFactory;
+use BitWasp\Stratum\Tests\AbstractStratumTest;
 
 class RequestTest extends AbstractStratumTest
 {

@@ -1,4 +1,16 @@
 {
+  "name": "bitwasp/stratum",
+  "description": "library for interfacing with stratum servers, used to serve both bitcoin mining and electrum clients",
+  "type": "library",
+  "homepage": "https://github.com/Bit-Wasp/stratum-php",
+  "licence": "Unlicence",
+  "authors": [
+    {
+      "name": "Thomas Kerin",
+      "homepage": "https://thomaskerin.io",
+      "role": "Author"
+    }
+  ],
   "require": {
     "fguillot/json-rpc": "0.0.1",
     "react/socket-client": "0.4.*"
@@ -8,12 +20,12 @@
   },
   "autoload": {
     "psr-4": {
-      "BitWasp\\Bitcoin\\Stratum\\": "src/"
+      "BitWasp\\Stratum\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "BitWasp\\Bitcoin\\Stratum\\Tests\\": "tests/"
+      "BitWasp\\Stratum\\Tests\\": "tests/"
     }
   }
 }

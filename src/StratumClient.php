@@ -1,31 +1,29 @@
 <?php
 
-namespace BitWasp\Bitcoin\Stratum;
+namespace BitWasp\Stratum;
 
-use BitWasp\Bitcoin\Stratum\Connector\ConnectorInterface;
-use BitWasp\Bitcoin\Stratum\Request\Request;
-use BitWasp\Bitcoin\Stratum\Request\RequestFactory;
+use BitWasp\Stratum\Request\RequestFactory;
 
 class StratumClient
 {
     /**
+     * @var Executor
+     */
+    private $executor;
+
+    /**
      * @var RequestFactory
      */
-    private $reqFactory;
+    private $requestFactory;
 
     /**
-     * @var ConnectorInterface
+     * @param Executor $executor
+     * @param RequestFactory $requestFactory
      */
-    private $connector;
-
-    /**
-     * @param \BitWasp\Bitcoin\Stratum\Connector\ConnectorInterface $connector
-     * @param RequestFactory $reqFactory
-     */
-    public function __construct(ConnectorInterface $connector, RequestFactory $reqFactory)
+    public function __construct(Executor $executor, RequestFactory $requestFactory)
     {
-        $this->connector = $connector;
-        $this->reqFactory = $reqFactory;
+        $this->executor = $executor;
+        $this->requestFactory = $requestFactory;
     }
 
     /**
@@ -35,10 +33,6 @@ class StratumClient
      */
     public function request($method, array $params = [])
     {
-        return $this->connector
-            ->send($this->reqFactory->create($method, $params))
-            ->then(function ($request) {
-                return $this->reqFactory->response($request);
-            });
+        return $this->executor->query($this->requestFactory->create($method, $params));
     }
 }

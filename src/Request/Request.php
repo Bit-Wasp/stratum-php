@@ -1,6 +1,6 @@
 <?php
 
-namespace BitWasp\Bitcoin\Stratum\Request;
+namespace BitWasp\Stratum\Request;
 
 class Request
 {

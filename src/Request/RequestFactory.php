@@ -1,6 +1,8 @@
 <?php
 
-namespace BitWasp\Bitcoin\Stratum\Request;
+namespace BitWasp\Stratum\Request;
+
+use BitWasp\Stratum\Exceptions\ApiError;
 
 class RequestFactory
 {
@@ -33,11 +35,17 @@ class RequestFactory
         $decoded = json_decode(trim($string), true);
 
         if (json_last_error() === JSON_ERROR_NONE) {
-            if (!isset($decoded['id']) || !isset($decoded['result'])) {
-                throw new \Exception('Response missing id or result');
+            if (!isset($decoded['id'])) {
+                throw new \Exception('Response missing id');
             }
 
-            return new Response($decoded['id'], $decoded['result']);
+            if (isset($decoded['error'])) {
+                throw new ApiError($decoded['id'], $decoded['error']);
+            } elseif ($decoded['result']) {
+                return new Response($decoded['id'], $decoded['result']);
+            }
+
+            throw new \Exception('Response missing error or result');
         }
 
         throw new \Exception('Invalid Json received');
