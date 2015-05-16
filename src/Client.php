@@ -4,7 +4,7 @@ namespace BitWasp\Stratum;
 
 use BitWasp\Stratum\Request\RequestFactory;
 
-class StratumClient
+class Client
 {
     /**
      * @var Executor

@@ -39,13 +39,13 @@ class Factory
      * @param $host
      * @param $port
      * @param $timeout
-     * @return StratumClient
+     * @return Client
      */
     public function create($host, $port, $timeout = 5)
     {
         $executor = $this->createExecutor($host, $port, $timeout);
 
-        return new StratumClient($executor, $this->requestFactory);
+        return new Client($executor, $this->requestFactory);
     }
 
     /**
