@@ -16,7 +16,7 @@
     "react/socket-client": "~0.5"
   },
   "require-dev": {
-    "bitwasp/testing-php": "0.0.3"
+    "bitwasp/testing-php": "~0.1"
   },
   "autoload": {
     "psr-4": {
