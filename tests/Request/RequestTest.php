@@ -18,9 +18,12 @@ class RequestTest extends AbstractStratumTest
         $this->assertEquals($id, $request->getId());
         $this->assertEquals($method, $request->getMethod());
         $this->assertEquals($params, $request->getParams());
+
+        $written = json_encode(["json-rpc" => "2.0", "id" => $id, "method" => $method, "params" => $params]) . "\n";
+        $this->assertEquals($written, $request->write());
     }
 
-    public function testRequestFactory()
+    public function testRequestFactoryCreate()
     {
         $factory = new RequestFactory();
 
@@ -28,6 +31,23 @@ class RequestTest extends AbstractStratumTest
         $params = ['a','b','c'];
         $request = $factory->create($method, $params);
 
+        $this->assertEquals($method, $request->getMethod());
+        $this->assertEquals($params, $request->getParams());
+    }
+
+    public function testRequestFactoryParse()
+    {
+        $factory = new RequestFactory();
+
+        $id = 909;
+        $method = 'this.method';
+        $params = ['a','b','c'];
+
+        /** @var Request $request */
+        $request = $factory->response(json_encode(['id'=>909, 'method' => $method, 'params' => $params]));
+
+        $this->assertInstanceOf('BitWasp\Stratum\Request\Request', $request);
+        $this->assertEquals($id, $request->getId());
         $this->assertEquals($method, $request->getMethod());
         $this->assertEquals($params, $request->getParams());
     }

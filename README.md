@@ -5,73 +5,155 @@
  
 Implementation of the Stratum protocol (for electrum and mining) using ReactPHP
 
-Currently this library supports a TCP transport to stratum servers. 
-Examples of these and other servers can be found on the Electrum server list.
+### Client
 
-Stratum enables rather stateless wallets to be built with minimal effort, and depending on the use-case could replace running a full node.
+The Client class is used to make a connection to a host. It takes a `ConnectorInterface`
+ and `RequestFactory`. 
+ 
+ `react/socket-client` provides a number of connectors, which can be combined
+ to produce the desired functionality. 
 
-### Requests
-Typical requests:
-  - server.banner
-  - server.version [$clientVersion, $protocolVersion] -  Client sends its own version and version of the protocol it supports. Server responds with its supported version of the protocol 
-  - server.donation_address - Return a servers donation address; can be empty. 
-  - server.peers.subscribe - (not a subscription) Returns a list of stratum servers connected on IRC
-
-For electrum servers
-  - blockchain.numblocks.subscribe - Return the current height of the chain
-  - blockchain.transaction.broadcast [$transactionHex] - broadcast the transaction, return the transaction id
-  - blockchain.transaction.get_merkle [$txid, $txHeight]
-  - blockchain.transaction.get [$txid]
-  - blockchain.address.subscribe [$address]
-  - blockchain.address.get_history [$address]
-  - blockchain.address.get_balance [$address] - return an array of confirmed 
-  - blockchain.address.get_proof [$address]
-  - blockchain.address.listunspent [$address] - return an array of [{'txhash':..,'tx_pos':..,'value':..,'height':...},...]
-  - blockchain.utxo.get_address [$txid, $nOutput] - return the address for this transaction output
-  - blockchain.block.get_header [$blockHeight] - return the header for the given block height
-  - blockchain.block.get_chunk [$blockHeight] - return the block hex for the given block
-
-For mining
-  - mining.subscribe - client subscribes for work
-  - mining.authorize [$username, $password] - authorize a worker
-  - mining.submit [$username, $jobId, $extraNonce2, $nTime, $nonce]
-
-### Example
+A raw TCP connector, which accepts only IP addresses:
 ```php
-use BitWasp\Stratum\Request\RequestFactory;
-use BitWasp\Stratum\Request\Response;
-use BitWasp\Stratum\Factory;
+use \BitWasp\Stratum\Request\RequestFactory;
+use \BitWasp\Stratum\Client;
 
-$host = 'bitcoin.trouth.net';
-$port = 50001;
-
-// Initialize react event loop, resolver, and connector
 $loop = React\EventLoop\Factory::create();
-$connector = new \React\SocketClient\Connector(
-    $loop,
-    (new React\Dns\Resolver\Factory())->create('8.8.8.8', $loop)
-);
 
-$requestFactory = new RequestFactory;
-$clientFactory = new Factory($loop, $connector, $requestFactory);
-$stratum = $clientFactory->create($host, $port);
+// Raw TCP, cannot perform DNS resolution
+$tcp = new \React\SocketClient\TcpConnector();
 
-$v = $stratum->request('server.version', ['1.9.7', ' 0.6'])->then(function (Response $r) {
-    echo "Server version: " . $r->getResult() . "\n";
+// TCP Connector with a DNS resolver
+$dns = new \React\SocketClient\DnsConnector($tcp, $resolver);
+
+// Encrypted connection
+$context_options = [];
+$tls = new \React\SocketClient\SecureConnector($dns, $loop, $context_options);
+
+$requests = new RequestFactory;
+$client = new Client($tls, $requests);
+
+$host = '';
+$port = '';
+$client->connect($host, $port)->then(function (Connection $conn) {
+    /* success */
+}, function (\Exception $e) {
+    /*  error  */
 });
+```
 
-// Make the query, receive a Promise
-$t = $stratum->request('blockchain.address.get_balance', ['1NfcqVqW4f6tACwaqjyKXRV75aqt3VEVPE']);
-$t->then(function (Response $response) {
-    var_dump($response);
-}, function (\BitWasp\Stratum\Exceptions\ApiError $error) {
-    echo sprintf(" [id: %s] error: %s", $error->getId(), $error->getMessage());
+The SecureConnector initiates a TLS session to encrypt your connection. $context_options is an optional
+value, but many Electrum servers have misconfigured SSL certificates! (incorrect CN field, or are self-signed)
+These will not be accepted with the default verification settings, and can be disabled with [verify_name => false]
+and [allow_self_signed => true] respectively.
+
+### Connection
+
+A `Connection` represents a connection to a peer. 
+
+Requests can be sent to the peer using `Connection::request($method, $params = [])`,
+which returns a Promise for the pending result. When a response with the same ID is
+received, the promise will resolve this as the result. 
+
+```php
+$conn->request('server.banner')->then(function (Response $response) {
+    print_r($response->getResult());
+}, function (\Exception $e) {
+    echo $e->getMessage();
 });
+```
 
-$loop->run();
+`Request` instances can be sent using `Connection::sendRequest(Request $request)`
+which also returns a promise. 
+
+For a list of methods for the electrum and mining clients, see the respective Api classes.
+The constants are method's for these APIs.
+
+```php
+$conn->sendRequest(new Request(null, 'server.banner'))->then(function (Response $response) {
+    print_r($response->getResult());
+}, function (\Exception $e) {
+    echo $e->getMessage();
+});
+```
+
+`NotificationInterface`'s can be sent using `Connection::sendNotify(NotificationInterface $note)`
+Notifications are not requests, and don't receive a response. This method is only relevant if 
+using `Connection` from a servers perspective.  
+
+```php
+$conn->sendNotification(new NumBlocksNotification(123123));
+```
+
+#### Api's
+
+The Stratum protocol is implemented by electrum servers and stratum mining pools. 
+Their methods are exposed by `ElectrumClient` and `MiningClient` respectively.
+
+The api methods cause a Request to be sent, returning a promise to capture the result.
+
+```php
+use \BitWasp\Stratum\Request\RequestFactory;
+use \BitWasp\Stratum\Client;
+use \BitWasp\Stratum\Api\ElectrumClient;
+
+$loop = React\EventLoop\Factory::create();
+$tcp = new \React\SocketClient\TcpConnector();
+$requests = new RequestFactory;
+$client = new Client($tls, $requests);
+
+$client->connect($host, $port)->then(function (Connection $conn) {
+    $electrum = new ElectrumClient($conn);
+    $electrum->addressListUnspent('1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L')->then(function (Response $response) {
+        print_r($response->getResult()); 
+    });
+}, function (\Exception $e) {
+    /*  error  */
+});
+```
+
+
+#### Events
+
+`Connection` emits a `message` event when a message is received which 
+was not initiated by a Request. These messages are typically due to subscriptions.
+
+The following events are emitted automatically by the library when encountered.
+The event name is the method used to enable the subscription. 
+  - 'blockchain.headers.subscribe' emits a `HeadersNotification`
+  - 'blockchain.address.subscribe' emits a `AddressNotification`
+  - 'blockchain.numblocks.subscribe' emits a `NumBlocksNotification`
+  - 'mining.subscribe' emits a `MiningNotification`
+  - 'mining.set_difficulty' emits a `SetDifficultyNotification` 
+
+```php
+use \BitWasp\Stratum\Request\RequestFactory;
+use \BitWasp\Stratum\Client;
+use \BitWasp\Stratum\Api\ElectrumClient;
+
+$loop = React\EventLoop\Factory::create();
+$tcp = new \React\SocketClient\TcpConnector();
+$requests = new RequestFactory;
+$client = new Client($tls, $requests);
+
+$client->connect($host, $port)->then(function (Connection $conn) {
+    $conn->on('message', function ($message) {
+         echo "Message received: ".PHP_EOL;
+         print_r($message);
+    });
+
+    $conn->on(ElectrumClient::ADDRESS_SUBSCRIBE, function (AddressNotification $address) {
+         echo "Received address update\n";
+    });
+    
+    $electrum = new ElectrumClient($conn);
+    $electrum->subscribeAddress('1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L');
+}, function (\Exception $e) {
+    /*  error  */
+});
 ```
 
 ### Further Information
 
-  - https://docs.google.com/document/d/17zHy1SUlhgtCMbypO8cHgpWH73V5iUQKk_0rWvMqSNs/edit?hl=en_US
+  - http://docs.electrum.org/en/latest/protocol.html
   - https://electrum.orain.org/wiki/Stratum_protocol_specification

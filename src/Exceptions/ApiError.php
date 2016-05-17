@@ -26,4 +26,15 @@ class ApiError extends \Exception
     {
         return $this->id;
     }
+
+    /**
+     * @return string
+     */
+    public function write()
+    {
+        return json_encode([
+            'id' => $this->id,
+            'error' => parent::getMessage()
+        ]) . "\n";
+    }
 }

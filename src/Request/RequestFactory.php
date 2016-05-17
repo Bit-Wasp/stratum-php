@@ -12,22 +12,22 @@ class RequestFactory
     private $nonces = [];
 
     /**
-     * @param $method
+     * @param string $method
      * @param array $params
      * @return Request
      */
     public function create($method, $params = array())
     {
         do {
-            $random = mt_rand(0, PHP_INT_MAX);
-        } while (in_array($random, $this->nonces));
+            $id = mt_rand(0, PHP_INT_MAX);
+        } while (in_array($id, $this->nonces));
 
-        return new Request($random, $method, $params);
+        return new Request($id, $method, $params);
     }
 
     /**
      * @param $string
-     * @return Response
+     * @return Response|Request
      * @throws \Exception
      */
     public function response($string)
@@ -35,19 +35,19 @@ class RequestFactory
         $decoded = json_decode(trim($string), true);
 
         if (json_last_error() === JSON_ERROR_NONE) {
-            if (!isset($decoded['id'])) {
-                throw new \Exception('Response missing id');
-            }
+            $id = isset($decoded['id']) ? $decoded['id'] : null;
 
             if (isset($decoded['error'])) {
-                throw new ApiError($decoded['id'], $decoded['error']);
-            } elseif ($decoded['result']) {
-                return new Response($decoded['id'], $decoded['result']);
+                throw new ApiError($id, $decoded['error']);
+            } elseif (isset($decoded['method']) && isset($decoded['params'])) {
+                return new Request($id, $decoded['method'], $decoded['params']);
+            } elseif (isset($decoded['result'])) {
+                return new Response($id, $decoded['result']);
             }
 
-            throw new \Exception('Response missing error or result');
+            throw new \Exception('Response missing error/params/result');
         }
 
-        throw new \Exception('Invalid Json received');
+        throw new \Exception('Invalid JSON');
     }
 }
