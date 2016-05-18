@@ -26,8 +26,8 @@ class RequestFactory
     }
 
     /**
-     * @param $string
-     * @return Response|Request
+     * @param string $string
+     * @return Response|Request|ApiError
      * @throws \Exception
      */
     public function response($string)
