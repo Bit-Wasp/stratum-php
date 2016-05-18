@@ -15,8 +15,9 @@ The Client class is used to make a connection to a host. It takes a `ConnectorIn
 
 A raw TCP connector, which accepts only IP addresses:
 ```php
-use \BitWasp\Stratum\Request\RequestFactory;
 use \BitWasp\Stratum\Client;
+use \BitWasp\Stratum\Connection;
+use \BitWasp\Stratum\Request\RequestFactory;
 
 $loop = React\EventLoop\Factory::create();
 
@@ -95,9 +96,10 @@ Their methods are exposed by `ElectrumClient` and `MiningClient` respectively.
 The api methods cause a Request to be sent, returning a promise to capture the result.
 
 ```php
-use \BitWasp\Stratum\Request\RequestFactory;
-use \BitWasp\Stratum\Client;
 use \BitWasp\Stratum\Api\ElectrumClient;
+use \BitWasp\Stratum\Client;
+use \BitWasp\Stratum\Connection;
+use \BitWasp\Stratum\Request\RequestFactory;
 
 $loop = React\EventLoop\Factory::create();
 $tcp = new \React\SocketClient\TcpConnector();
@@ -131,9 +133,10 @@ The event name is the method used to enable the subscription.
   - 'mining.set_difficulty' emits a `SetDifficultyNotification` 
 
 ```php
-use \BitWasp\Stratum\Request\RequestFactory;
-use \BitWasp\Stratum\Client;
 use \BitWasp\Stratum\Api\ElectrumClient;
+use \BitWasp\Stratum\Client;
+use \BitWasp\Stratum\Connection;
+use \BitWasp\Stratum\Request\RequestFactory;
 
 $loop = React\EventLoop\Factory::create();
 $tcp = new \React\SocketClient\TcpConnector();
