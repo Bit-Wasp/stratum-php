@@ -2,7 +2,7 @@
 
 namespace BitWasp\Stratum\Tests\Request;
 
-use BitWasp\Stratum\Exceptions\ApiError;
+use BitWasp\Stratum\Exception\ApiError;
 use BitWasp\Stratum\Request\RequestFactory;
 use BitWasp\Stratum\Tests\AbstractStratumTest;
 

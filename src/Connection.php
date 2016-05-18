@@ -121,7 +121,7 @@ class Connection extends EventEmitter
 
     /**
      * @param string $data
-     * @throws Exceptions\ApiError
+     * @throws \BitWasp\Stratum\Exception\ApiError
      * @throws \Exception
      */
     public function onMessage($data)

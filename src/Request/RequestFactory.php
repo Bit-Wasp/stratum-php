@@ -2,7 +2,7 @@
 
 namespace BitWasp\Stratum\Request;
 
-use BitWasp\Stratum\Exceptions\ApiError;
+use BitWasp\Stratum\Exception\ApiError;
 
 class RequestFactory
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace BitWasp\Stratum\Exceptions;
+namespace BitWasp\Stratum\Exception;
 
 class ApiError extends \Exception
 {
