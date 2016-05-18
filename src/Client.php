@@ -3,13 +3,15 @@
 namespace BitWasp\Stratum;
 
 use BitWasp\Stratum\Request\RequestFactory;
+use React\SocketClient\ConnectorInterface;
+use React\Stream\Stream;
 
 class Client
 {
     /**
-     * @var Executor
+     * @var ConnectorInterface
      */
-    private $executor;
+    private $connector;
 
     /**
      * @var RequestFactory
@@ -17,22 +19,27 @@ class Client
     private $requestFactory;
 
     /**
-     * @param Executor $executor
+     * Client constructor.
+     * @param ConnectorInterface $connector
      * @param RequestFactory $requestFactory
      */
-    public function __construct(Executor $executor, RequestFactory $requestFactory)
+    public function __construct(ConnectorInterface $connector, RequestFactory $requestFactory)
     {
-        $this->executor = $executor;
+        $this->connector = $connector;
         $this->requestFactory = $requestFactory;
     }
 
     /**
-     * @param $method
-     * @param array $params
-     * @return \React\Promise\Promise
+     * @param string $host
+     * @param int $port
+     * @return string
      */
-    public function request($method, array $params = [])
+    public function connect($host, $port)
     {
-        return $this->executor->query($this->requestFactory->create($method, $params));
+        return $this->connector->create($host, $port)->then(function (Stream $stream) {
+            return new Connection($stream, $this->requestFactory);
+        }, function (\Exception $e) {
+            throw $e;
+        });
     }
 }

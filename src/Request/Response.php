@@ -39,4 +39,15 @@ class Response
     {
         return $this->result;
     }
+
+    /**
+     * @return string
+     */
+    public function write()
+    {
+        return json_encode([
+            'id' => $this->id,
+            'result' => $this->result
+        ]) . "\n";
+    }
 }
