@@ -7,7 +7,7 @@ use BitWasp\Stratum\Request\Request;
 use BitWasp\Stratum\Tests\AbstractStratumTest;
 use React\Promise\FulfilledPromise;
 
-class MiningServerTest extends AbstractStratumTest
+class MiningClientTest extends AbstractStratumTest
 {
     public function getMethodVectors()
     {
