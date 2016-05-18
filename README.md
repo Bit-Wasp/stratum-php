@@ -13,22 +13,24 @@ The Client class is used to make a connection to a host. It takes a `ConnectorIn
  `react/socket-client` provides a number of connectors, which can be combined
  to produce the desired functionality. 
 
-A raw TCP connector, which accepts only IP addresses:
 ```php
 use \BitWasp\Stratum\Client;
 use \BitWasp\Stratum\Connection;
 use \BitWasp\Stratum\Request\RequestFactory;
 
-$loop = React\EventLoop\Factory::create();
+$loop = \React\EventLoop\Factory::create();
+
+$resolver = new \React\Dns\Resolver\Factory();
 
 // Raw TCP, cannot perform DNS resolution
-$tcp = new \React\SocketClient\TcpConnector();
+$tcp = new \React\SocketClient\TcpConnector($loop);
 
 // TCP Connector with a DNS resolver
-$dns = new \React\SocketClient\DnsConnector($tcp, $resolver);
+$dns = new \React\SocketClient\DnsConnector($tcp, $resolver->create('8.8.8.8', $loop));
 
 // Encrypted connection
 $context_options = [];
+
 $tls = new \React\SocketClient\SecureConnector($dns, $loop, $context_options);
 
 $requests = new RequestFactory;
@@ -36,10 +38,12 @@ $client = new Client($tls, $requests);
 
 $host = '';
 $port = '';
+
 $client->connect($host, $port)->then(function (Connection $conn) {
     /* success */
 }, function (\Exception $e) {
     /*  error  */
+    print_r($e->getMessage());
 });
 
 $loop->run();
@@ -47,8 +51,10 @@ $loop->run();
 
 The SecureConnector initiates a TLS session to encrypt your connection. $context_options is an optional
 value, but many Electrum servers have misconfigured SSL certificates! (incorrect CN field, or are self-signed)
-These will not be accepted with the default verification settings, and can be disabled with [verify_name => false]
-and [allow_self_signed => true] respectively.
+These will not be accepted with the default verification settings, and can be disabled by changing the $context_options
+``` 
+$context_options = ["verify_name" => false, "allow_self_signed" => true];
+```
 
 ### Connection
 
