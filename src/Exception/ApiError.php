@@ -34,7 +34,7 @@ class ApiError extends \Exception
     {
         return json_encode([
             'id' => $this->id,
-            'error' => parent::getMessage()
+            'error' => $this->getMessage()
         ]) . "\n";
     }
 }
