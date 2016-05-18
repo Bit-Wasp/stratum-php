@@ -40,6 +40,8 @@ $client->connect($host, $port)->then(function (Connection $conn) {
 }, function (\Exception $e) {
     /*  error  */
 });
+
+$loop->run();
 ```
 
 The SecureConnector initiates a TLS session to encrypt your connection. $context_options is an optional
@@ -110,6 +112,8 @@ $client->connect($host, $port)->then(function (Connection $conn) {
 }, function (\Exception $e) {
     /*  error  */
 });
+
+$loop->run();
 ```
 
 
@@ -151,6 +155,8 @@ $client->connect($host, $port)->then(function (Connection $conn) {
 }, function (\Exception $e) {
     /*  error  */
 });
+
+$loop->run();
 ```
 
 ### Further Information
