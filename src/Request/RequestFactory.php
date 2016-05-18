@@ -2,7 +2,7 @@
 
 namespace BitWasp\Stratum\Request;
 
-use BitWasp\Stratum\Exceptions\ApiError;
+use BitWasp\Stratum\Exception\ApiError;
 
 class RequestFactory
 {
@@ -26,8 +26,8 @@ class RequestFactory
     }
 
     /**
-     * @param $string
-     * @return Response|Request
+     * @param string $string
+     * @return Response|Request|ApiError
      * @throws \Exception
      */
     public function response($string)
@@ -38,7 +38,7 @@ class RequestFactory
             $id = isset($decoded['id']) ? $decoded['id'] : null;
 
             if (isset($decoded['error'])) {
-                throw new ApiError($id, $decoded['error']);
+                return new ApiError($id, $decoded['error']);
             } elseif (isset($decoded['method']) && isset($decoded['params'])) {
                 return new Request($id, $decoded['method'], $decoded['params']);
             } elseif (isset($decoded['result'])) {

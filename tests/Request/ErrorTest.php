@@ -2,7 +2,7 @@
 
 namespace BitWasp\Stratum\Tests\Request;
 
-use BitWasp\Stratum\Exceptions\ApiError;
+use BitWasp\Stratum\Exception\ApiError;
 use BitWasp\Stratum\Request\RequestFactory;
 use BitWasp\Stratum\Tests\AbstractStratumTest;
 
@@ -15,16 +15,11 @@ class ErrorTest extends AbstractStratumTest
         $id = 909;
         $error = 'Unknown method';
 
-        try {
-            $factory->response(json_encode(['id' => 909, 'error' => $error]));
-        } catch (ApiError $e) {
-            $this->assertEquals($id, $e->getId());
-            $this->assertEquals($error, $e->getMessage());
+        $e = $factory->response(json_encode(['id' => 909, 'error' => $error]));
+        $this->assertEquals($id, $e->getId());
+        $this->assertEquals($error, $e->getMessage());
 
-            $written = json_encode(['id' => $id, 'error' =>$error])."\n";
-            $this->assertEquals($written, $e->write());
-        } catch (\Exception $e) {
-            $this->fail('wrong case was triggered - not too bad, just make sure the equivalent tests are run');
-        }
+        $written = json_encode(['id' => $id, 'error' =>$error])."\n";
+        $this->assertEquals($written, $e->write());
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace BitWasp\Stratum\Exceptions;
+namespace BitWasp\Stratum\Exception;
 
 class ApiError extends \Exception
 {
@@ -34,7 +34,7 @@ class ApiError extends \Exception
     {
         return json_encode([
             'id' => $this->id,
-            'error' => parent::getMessage()
+            'error' => $this->getMessage()
         ]) . "\n";
     }
 }

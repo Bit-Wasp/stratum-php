@@ -7,7 +7,7 @@ use BitWasp\Stratum\Request\Request;
 use BitWasp\Stratum\Tests\AbstractStratumTest;
 use React\Promise\FulfilledPromise;
 
-class ElectrumServerTest extends AbstractStratumTest
+class ElectrumClientTest extends AbstractStratumTest
 {
     public function getMethodVectors()
     {
