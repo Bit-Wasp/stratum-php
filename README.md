@@ -105,19 +105,28 @@ The api methods cause a Request to be sent, returning a promise to capture the r
 use \BitWasp\Stratum\Api\ElectrumClient;
 use \BitWasp\Stratum\Client;
 use \BitWasp\Stratum\Connection;
+use \BitWasp\Stratum\Request\Response;
 use \BitWasp\Stratum\Request\RequestFactory;
 
-$loop = React\EventLoop\Factory::create();
-$tcp = new \React\SocketClient\TcpConnector();
+$loop = \React\EventLoop\Factory::create();
+$tcp = new \React\SocketClient\TcpConnector($loop)   ;
+
+$resolver = new \React\Dns\Resolver\Factory();
+$dns = new \React\SocketClient\DnsConnector($tcp,$resolver->create('8.8.8.8', $loop));
+$tls = new \React\SocketClient\SecureConnector($dns, $loop);
 $requests = new RequestFactory;
 $client = new Client($tls, $requests);
 
+$host = 'anduck.net';
+$port = 50002;
 $client->connect($host, $port)->then(function (Connection $conn) {
     $electrum = new ElectrumClient($conn);
     $electrum->addressListUnspent('1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L')->then(function (Response $response) {
-        print_r($response->getResult()); 
+        print_r($response->getResult());
     });
 }, function (\Exception $e) {
+    echo 'error';
+    echo $e->getMessage().PHP_EOL;
     /*  error  */
 });
 
@@ -142,27 +151,36 @@ The event name is the method used to enable the subscription.
 use \BitWasp\Stratum\Api\ElectrumClient;
 use \BitWasp\Stratum\Client;
 use \BitWasp\Stratum\Connection;
+use \BitWasp\Stratum\Notification\AddressNotification;
 use \BitWasp\Stratum\Request\RequestFactory;
 
 $loop = React\EventLoop\Factory::create();
-$tcp = new \React\SocketClient\TcpConnector();
+$tcp = new \React\SocketClient\TcpConnector($loop);
+$resolver = new \React\Dns\Resolver\Factory();
+$dns = new \React\SocketClient\DnsConnector($tcp, $resolver->create('8.8.8.8', $loop));
+$tls = new \React\SocketClient\SecureConnector($dns, $loop);
+
 $requests = new RequestFactory;
 $client = new Client($tls, $requests);
 
+$host = 'anduck.net';
+$port = 50002;
 $client->connect($host, $port)->then(function (Connection $conn) {
     $conn->on('message', function ($message) {
-         echo "Message received: ".PHP_EOL;
-         print_r($message);
+        echo "Message received: ".PHP_EOL;
+        print_r($message);
     });
 
     $conn->on(ElectrumClient::ADDRESS_SUBSCRIBE, function (AddressNotification $address) {
-         echo "Received address update\n";
+        echo "Received address update\n";
     });
-    
+
     $electrum = new ElectrumClient($conn);
-    $electrum->subscribeAddress('1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L');
+    $electrum->subscribeAddress('1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L')->then(function () {
+        echo "subscribed\n";
+    });
 }, function (\Exception $e) {
-    /*  error  */
+    echo "ERROR: " . $e->getMessage().PHP_EOL;
 });
 
 $loop->run();
