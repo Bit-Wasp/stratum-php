@@ -36,7 +36,8 @@ class Client
      */
     public function connect($host, $port)
     {
-        return $this->connector->create($host, $port)->then(function (Stream $stream) {
+        $uri = $host.':'.$port;
+        return $this->connector->connect($uri)->then(function (Stream $stream) {
             return new Connection($stream, $this->requestFactory);
         }, function (\Exception $e) {
             throw $e;
